@@ -39,3 +39,45 @@ Logistic_Model=glm(Class~.,train_data,family=binomial())
 summary(Logistic_Model)
 plot(Logistic_Model)
 
+
+#Assess the performance of our model
+library(pROC)
+lr.predict <- predict(Logistic_Model,test_data, probability = TRUE)
+auc.gbm = roc(test_data$Class, lr.predict, plot = TRUE, col = "blue")
+fitted(Logistic_Model)
+#To get the numeric value or performance metric for the model
+#to get the probability value, include type = response
+lr.predict67 <- predict(Logistic_Model,test_data, probability = TRUE, type = "response")
+#classify
+lr.predict67.classify <- ifelse(lr.predict67>0.5, 1, 0)
+#to obtain the confusion matrix - which is to compare the values of the model and the actual value
+LRM_convb <- table(lr.predict67.classify, test_data$Class)
+class(lr.predict67)
+class(test_data$Class)
+library(caret)
+sensitivity(LRM_convb)
+specificity(LRM_convb)
+
+#Artificial Neural Network: machine learning algorithm that are modeled after the human nervous system.
+#The ANN models are able to learn the patterns using the historical data and are able to perform classification on the input data.
+#?? >To estimate model
+library(neuralnet)
+set.seed(23)
+ANN_model =neuralnet (Class~.,train_data,linear.output=FALSE)
+plot(ANN_model)
+
+#prediction
+#To validate the model
+predANN=compute(ANN_model,test_data)
+resultANN=predANN$net.result
+#classifying using a threshold
+resultANN=ifelse(resultANN>0.5,1,0)
+tail(resultANN, 200)
+
+#Getting performance metrics
+#Confusion Matrix or 2 by 2 contingency table - comparing the output of a model against the actual model
+ANN_conf<- table(resultANN, test_data$Class)
+library(caret)
+sensitivity(ANN_conf)
+specificity(ANN_conf)
+class(resultANN)
